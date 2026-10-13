@@ -1,0 +1,15 @@
+server {
+    listen {{ nginx_port }} default_server;
+    server_name {{ nginx_server_name }};
+    root /var/www/html;
+    index index.html index.php;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.5-fpm.sock;
+    }
+}

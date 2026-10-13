@@ -1,0 +1,7 @@
+---
+- name: Deploy PHP via role
+  hosts: webservers
+  become: yes
+
+  roles:
+    - php

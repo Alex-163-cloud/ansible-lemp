@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ page_title }}</title>
+</head>
+<body>
+    <h1>{{ page_title }}</h1>
+    <hr>
+    <p><b>Host:</b> {{ ansible_facts['hostname'] }}</p>
+    <p><b>OS:</b> {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}</p>
+    <p><b>IP:</b> {{ ansible_facts['default_ipv4']['address'] }}</p>
+    <p><b>Nginx port:</b> {{ nginx_port }}</p>
+    <p><b>Server name:</b> {{ nginx_server_name }}</p>
+    <hr>
+    <p><i>Deployed by Ansible role: nginx</i></p>
+</body>
+</html>

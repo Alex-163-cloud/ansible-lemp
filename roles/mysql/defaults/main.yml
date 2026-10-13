@@ -1,0 +1,8 @@
+---
+mysql_service_name: mysql
+mysql_db_name: lemp_db
+mysql_db_user: lemp_user
+mysql_db_host: localhost
+mysql_packages:
+  - mysql-server
+  - python3-pymysql

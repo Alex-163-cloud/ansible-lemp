@@ -1,0 +1,8 @@
+---
+php_version: "8.5"
+php_packages:
+  - "php{{ php_version }}-fpm"
+  - "php{{ php_version }}-mysql"
+  - "php{{ php_version }}-cli"
+  - "php{{ php_version }}-common"
+php_service_name: "php{{ php_version }}-fpm"

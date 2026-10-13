@@ -1,0 +1,30 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install MySQL packages
+  apt:
+    name: "{{ mysql_packages }}"
+    state: present
+
+- name: Ensure MySQL is running and enabled
+  service:
+    name: "{{ mysql_service_name }}"
+    state: started
+    enabled: yes
+
+- name: Create application database
+  community.mysql.mysql_db:
+    name: "{{ mysql_db_name }}"
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Create application database user via SQL
+  community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    query:
+      - "CREATE USER IF NOT EXISTS '{{ mysql_db_user }}'@'{{ mysql_db_host }}' IDENTIFIED WITH caching_sha2_password BY '{{ mysql_db_password }}';"
+      - "GRANT ALL PRIVILEGES ON {{ mysql_db_name }}.* TO '{{ mysql_db_user }}'@'{{ mysql_db_host }}';"
+      - "FLUSH PRIVILEGES;"

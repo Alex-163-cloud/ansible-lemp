@@ -1,0 +1,9 @@
+---
+- name: Full LEMP stack deployment
+  hosts: webservers
+  become: yes
+
+  roles:
+    - nginx
+    - mysql
+    - php
