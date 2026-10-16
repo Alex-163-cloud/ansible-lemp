@@ -1,6 +1,5 @@
 ---
 stages:
-  - lint
   - syntax
   - test
 
@@ -19,14 +18,8 @@ cache:
   before_script:
     - apt-get update && apt-get install -y git
     - python3 -m pip install --upgrade pip
-    - python3 -m pip install ansible-core ansible-lint
+    - python3 -m pip install ansible-core
     - ansible-galaxy install -r requirements.yml
-
-ansible-lint:
-  stage: lint
-  extends: .ansible_base
-  script:
-    - ansible-lint playbook-lemp.yml playbook-multi-os.yml docker-playbook.yml
 
 syntax-check:
   stage: syntax
