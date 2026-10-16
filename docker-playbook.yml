@@ -34,9 +34,9 @@
           retries: 3
 
     - name: Wait for nginx to be ready
-      uri:
+      ansible.builtin.uri:
         url: http://localhost:8090   # ← 8090
-        return_content: yes
+        return_content: true
       register: nginx_response
       retries: 5
       delay: 3

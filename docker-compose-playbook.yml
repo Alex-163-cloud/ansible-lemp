@@ -11,9 +11,9 @@
         state: present
 
     - name: Test compose service
-      uri:
+      ansible.builtin.uri:
         url: http://localhost:8092
-        return_content: yes
+        return_content: true
       register: response
 
     - name: Show response

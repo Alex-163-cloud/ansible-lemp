@@ -18,7 +18,7 @@
   tags: [python_app, install]
 
 - name: Install Python packages (RedHat)
-  dnf:
+  ansible.builtin.dnf:
     name:
       - python3
       - python3-pip

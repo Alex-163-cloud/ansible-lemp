@@ -1,4 +1,4 @@
 ---
 nginx_port: 80
 nginx_server_name: "_"
-page_title: "Nginx from Role"
+nginx_page_title: "Nginx from Role"

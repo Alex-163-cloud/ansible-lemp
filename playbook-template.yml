@@ -4,7 +4,7 @@
   become: true
 
 #  vars:
- #   page_title: "Production Server 1"
+ #   nginx_page_title: "Production Server 1"
   #  deploy_env: "development"
 
   tasks:

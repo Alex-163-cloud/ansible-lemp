@@ -24,9 +24,9 @@
         restart_policy: unless-stopped
 
     - name: Test custom image
-      uri:
+      ansible.builtin.uri:
         url: http://localhost:8091
-        return_content: yes
+        return_content: true
       register: response
 
     - name: Show response

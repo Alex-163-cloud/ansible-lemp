@@ -5,9 +5,14 @@ exclude_paths:
   - .ansible/
   - molecule/
   - roles/nginx/molecule/
+  - roles/mysql/molecule/
+  - roles/php/molecule/
+  - roles/python_app/molecule/
 skip_list:
   - yaml[line-length]
   - name[template]
   - risky-file-permissions
+  - var-naming[no-role-prefix]
+  - var-naming[no-reserved]
 warn_list:
   - experimental
