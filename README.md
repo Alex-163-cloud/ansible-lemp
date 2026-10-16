@@ -1,5 +1,6 @@
 # Ansible LEMP & Infrastructure Automation
 
+[![Pipeline](https://gitlab.com/vladimir_vgb/ansible-lemp/badges/main/pipeline.svg)](https://gitlab.com/vladimir_vgb/ansible-lemp/-/pipelines)
 [![Ansible](https://img.shields.io/badge/Ansible-2.21-blue)](https://www.ansible.com/)
 [![Molecule](https://img.shields.io/badge/Molecule-26.10-brightgreen)](https://molecule.readthedocs.io/)
 [![Docker](https://img.shields.io/badge/Docker-ready-blue)](https://www.docker.com/)
