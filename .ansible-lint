@@ -1,0 +1,13 @@
+---
+profile: production
+exclude_paths:
+  - .cache/
+  - .ansible/
+  - molecule/
+  - roles/nginx/molecule/
+skip_list:
+  - yaml[line-length]
+  - name[template]
+  - risky-file-permissions
+warn_list:
+  - experimental

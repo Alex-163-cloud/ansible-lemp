@@ -1,4 +1,4 @@
 ---
 - name: Restart python_app
-  debug:
+  ansible.builtin.debug:
     msg: "App config changed — would restart python_app (systemd not available in container)"

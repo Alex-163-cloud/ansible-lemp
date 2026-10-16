@@ -1,13 +1,13 @@
 ---
 # ============ Debian/Ubuntu ============
 - name: Update apt cache (Debian)
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 3600
   when: ansible_facts['os_family'] == 'Debian'
 
 - name: Install nginx (Debian)
-  apt:
+  ansible.builtin.apt:
     name: nginx
     state: present
   when: ansible_facts['os_family'] == 'Debian'
@@ -21,10 +21,10 @@
 
 # ============ Общее ============
 - name: Verify nginx binary exists
-  command: nginx -v
+  ansible.builtin.command: nginx -v
   register: nginx_version
   changed_when: false
 
 - name: Show nginx version
-  debug:
+  ansible.builtin.debug:
     msg: "{{ nginx_version.stderr }}"

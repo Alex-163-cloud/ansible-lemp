@@ -2,7 +2,7 @@
 - name: Deploy PostgreSQL
   hosts: localhost
   connection: local
-  become: yes
+  become: true
 
   vars:
     postgresql_databases:

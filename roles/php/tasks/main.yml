@@ -1,16 +1,16 @@
 ---
 - name: Update apt cache
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 3600
 
 - name: Install PHP packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ php_packages }}"
     state: present
 
 - name: Ensure PHP-FPM is running and enabled
-  service:
+  ansible.builtin.service:
     name: "{{ php_service_name }}"
     state: started
-    enabled: yes
+    enabled: true

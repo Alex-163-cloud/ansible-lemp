@@ -5,13 +5,13 @@
 
   tasks:
     - name: First
-      debug:
+      ansible.builtin.debug:
         msg: "First"
 
     - name: Second
-      debug:
+      ansible.builtin.debug:
         msg: "Second"
 
     - name: Third
-      debug:
+      ansible.builtin.debug:
         msg: "Third"

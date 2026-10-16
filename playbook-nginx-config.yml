@@ -1,11 +1,11 @@
 ---
 - name: Configure Nginx with handler
   hosts: webservers
-  become: yes
+  become: true
 
   tasks:
     - name: Create custom index.html
-      copy:
+      ansible.builtin.copy:
         content: "<h1>Hello from Ansible!</h1>\n"
         dest: /var/www/html/index.html
         owner: www-data
@@ -14,7 +14,7 @@
       notify: Reload nginx
 
     - name: Create custom nginx config
-      copy:
+      ansible.builtin.copy:
         content: |
           server {
               listen 80 default_server;
@@ -30,6 +30,6 @@
 
   handlers:
     - name: Reload nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: reloaded

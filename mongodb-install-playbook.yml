@@ -2,7 +2,7 @@
 - name: Install MongoDB 7.0
   hosts: localhost
   connection: local
-  become: yes
+  become: true
 
   vars:
     mongodb_version: "7.0"
@@ -11,16 +11,16 @@
 
   tasks:
     - name: Install dependencies
-      apt:
+      ansible.builtin.apt:
         name:
           - gnupg
           - curl
           - apt-transport-https
         state: present
-        update_cache: yes
+        update_cache: true
 
     - name: Add MongoDB GPG key
-      shell: |
+      ansible.builtin.shell: |
         curl -fsSL https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc | \
           gpg -o /usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg --dearmor
       args:
@@ -33,22 +33,22 @@
         filename: "mongodb-org-{{ mongodb_version }}"
 
     - name: Install MongoDB
-      apt:
+      ansible.builtin.apt:
         name: mongodb-org
         state: present
-        update_cache: yes
+        update_cache: true
 
     - name: Start MongoDB
-      service:
+      ansible.builtin.service:
         name: mongod
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Check MongoDB version
-      command: mongod --version
+      ansible.builtin.command: mongod --version
       register: mongod_version
       changed_when: false
 
     - name: Show MongoDB version
-      debug:
+      ansible.builtin.debug:
         var: mongod_version.stdout_lines

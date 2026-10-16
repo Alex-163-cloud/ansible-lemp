@@ -5,7 +5,7 @@
 
   tasks:
     - name: Create test file
-      copy:
+      ansible.builtin.copy:
         content: |
           line 1: original
           line 2: original

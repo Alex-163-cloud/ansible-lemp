@@ -2,7 +2,7 @@
 - name: Deploy Docker containers via Ansible
   hosts: localhost
   connection: local
-  become: yes
+  become: true
 
   tasks:
     - name: Create Docker network
@@ -43,5 +43,5 @@
       until: nginx_response.status == 200
 
     - name: Show nginx status
-      debug:
+      ansible.builtin.debug:
         msg: "Nginx is up! HTTP {{ nginx_response.status }}"

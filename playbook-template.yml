@@ -1,7 +1,7 @@
 ---
 - name: Deploy templated index.html
   hosts: webservers
-  become: yes
+  become: true
 
 #  vars:
  #   page_title: "Production Server 1"
@@ -9,7 +9,7 @@
 
   tasks:
     - name: Deploy index.html from template
-      template:
+      ansible.builtin.template:
         src: templates/index.html.j2
         dest: /var/www/html/index.html
         owner: www-data
@@ -18,11 +18,11 @@
       notify: Reload nginx
 
     - name: Show deployment info
-      debug:
+      ansible.builtin.debug:
         msg: "Deployed to {{ inventory_hostname }} in {{ deploy_env }} environment"
 
   handlers:
     - name: Reload nginx
-      service:
+      ansible.builtin.service:
         name: nginx
         state: reloaded

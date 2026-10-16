@@ -1,30 +1,30 @@
 ---
 - name: Install and configure Nginx
   hosts: webservers
-  become: yes
+  become: true
 
   tasks:
     - name: Update apt cache
-      apt:
-        update_cache: yes
+      ansible.builtin.apt:
+        update_cache: true
         cache_valid_time: 3600
 
     - name: Install nginx
-      apt:
+      ansible.builtin.apt:
         name: nginx
         state: present
 
     - name: Ensure nginx is running and enabled
-      service:
+      ansible.builtin.service:
         name: nginx
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Check nginx status
-      command: systemctl is-active nginx
+      ansible.builtin.command: systemctl is-active nginx
       register: nginx_status
       changed_when: false
 
     - name: Show nginx status
-      debug:
+      ansible.builtin.debug:
         msg: "Nginx is {{ nginx_status.stdout }}"

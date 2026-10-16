@@ -1,19 +1,19 @@
 ---
 - name: Update apt cache
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 3600
 
 - name: Install MySQL packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ mysql_packages }}"
     state: present
 
 - name: Ensure MySQL is running and enabled
-  service:
+  ansible.builtin.service:
     name: "{{ mysql_service_name }}"
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Create application database
   community.mysql.mysql_db:

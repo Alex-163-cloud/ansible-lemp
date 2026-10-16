@@ -1,7 +1,7 @@
 ---
 - name: Deploy MySQL via role
   hosts: databases
-  become: yes
+  become: true
 
   roles:
     - mysql

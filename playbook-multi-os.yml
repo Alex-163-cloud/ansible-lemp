@@ -1,7 +1,7 @@
 ---
 - name: Test nginx installation on multiple OS
   hosts: all
-  become: yes
+  become: true
 
   roles:
     - nginx

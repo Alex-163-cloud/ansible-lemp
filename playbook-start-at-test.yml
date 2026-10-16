@@ -5,17 +5,17 @@
 
   tasks:
     - name: Task 1 - Always runs
-      debug:
+      ansible.builtin.debug:
         msg: "Task 1"
 
     - name: Task 2 - Should be skipped
-      debug:
+      ansible.builtin.debug:
         msg: "Task 2"
 
     - name: Task 3 - Start here
-      debug:
+      ansible.builtin.debug:
         msg: "Task 3"
 
     - name: Task 4 - After start
-      debug:
+      ansible.builtin.debug:
         msg: "Task 4"

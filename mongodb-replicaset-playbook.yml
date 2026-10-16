@@ -2,7 +2,7 @@
 - name: Deploy MongoDB replica set (3 nodes on one host)
   hosts: localhost
   connection: local
-  become: yes
+  become: true
 
   vars:
     mongodb_replset_name: rs0
@@ -14,14 +14,14 @@
   tasks:
     # ============ Шаг 1: Остановить systemd-версию ============
     - name: Stop systemd MongoDB (port 27017)
-      service:
+      ansible.builtin.service:
         name: mongod
         state: stopped
       ignore_errors: yes
 
     # ============ Шаг 2: Убить все ручные mongod (безопасно) ============
     - name: Kill any running mongod processes
-      shell: |
+      ansible.builtin.shell: |
         for pid in $(pgrep -f "mongod --replSet" || true); do
           if ! ps -p $pid -o cmd= | grep -qE "ansible|pgrep|grep"; then
             kill $pid 2>/dev/null || true
@@ -36,20 +36,20 @@
 
     # ============ Шаг 3: Удалить старые данные и логи ============
     - name: Remove old MongoDB data
-      file:
+      ansible.builtin.file:
         path: "/var/lib/mongodb-{{ item.name }}"
         state: absent
       loop: "{{ mongodb_nodes }}"
 
     - name: Remove old MongoDB logs
-      file:
+      ansible.builtin.file:
         path: "/var/log/mongodb-{{ item.name }}.log"
         state: absent
       loop: "{{ mongodb_nodes }}"
 
     # ============ Шаг 4: Создать директории и логи ============
     - name: Create data directories
-      file:
+      ansible.builtin.file:
         path: "/var/lib/mongodb-{{ item.name }}"
         state: directory
         owner: mongodb
@@ -58,7 +58,7 @@
       loop: "{{ mongodb_nodes }}"
 
     - name: Create log files
-      file:
+      ansible.builtin.file:
         path: "/var/log/mongodb-{{ item.name }}.log"
         state: touch
         owner: mongodb
@@ -68,7 +68,7 @@
 
     # ============ Шаг 5: /var/run/mongodb ============
     - name: Ensure /var/run/mongodb exists
-      file:
+      ansible.builtin.file:
         path: /var/run/mongodb
         state: directory
         owner: mongodb
@@ -77,7 +77,7 @@
 
     # ============ Шаг 6: Запустить 3 mongod через nohup ============
     - name: Start MongoDB nodes via nohup
-      shell: |
+      ansible.builtin.shell: |
         nohup mongod --replSet {{ mongodb_replset_name }} \
                      --port {{ item.port }} \
                      --dbpath /var/lib/mongodb-{{ item.name }} \
@@ -98,7 +98,7 @@
 
     # ============ Шаг 8: Инициализировать replica set ============
     - name: Initiate replica set
-      shell: |
+      ansible.builtin.shell: |
         mongosh --port 27017 --quiet --eval '
           try {
             rs.status();
@@ -117,23 +117,23 @@
         '
       register: rs_init
       changed_when: "'initiated' in rs_init.stdout and 'already-initiated' not in rs_init.stdout"
-      run_once: yes
+      run_once: true
 
     # ============ Шаг 9: Подождать стабилизации ============
     - name: Wait for replica set to stabilize
       pause:
         seconds: 15
-      run_once: yes
+      run_once: true
 
     # ============ Шаг 10: Проверить статус ============
     - name: Check replica set status
-      shell: |
+      ansible.builtin.shell: |
         mongosh --port 27017 --quiet --eval 'rs.status().members.map(m => m.name + " => " + m.stateStr).join("\n")'
       register: rs_status
       changed_when: false
-      run_once: yes
+      run_once: true
 
     - name: Show replica set status
-      debug:
+      ansible.builtin.debug:
         var: rs_status.stdout_lines
-      run_once: yes
+      run_once: true

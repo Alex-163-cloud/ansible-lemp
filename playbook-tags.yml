@@ -5,21 +5,21 @@
 
   tasks:
     - name: Task 1
-      debug:
+      ansible.builtin.debug:
         msg: "Task 1"
       tags: [t1]
 
     - name: Task 2
-      debug:
+      ansible.builtin.debug:
         msg: "Task 2"
       tags: [t2]
 
     - name: Task 3
-      debug:
+      ansible.builtin.debug:
         msg: "Task 3"
       tags: [t3]
 
     - name: Task 4
-      debug:
+      ansible.builtin.debug:
         msg: "Task 4"
       tags: [t4]

@@ -2,7 +2,7 @@
 - name: Deploy MongoDB
   hosts: localhost
   connection: local
-  become: yes
+  become: true
 
   vars:
     mongodb_version: "7.0"

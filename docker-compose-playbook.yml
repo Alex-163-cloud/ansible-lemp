@@ -2,7 +2,7 @@
 - name: Deploy via docker_compose_v2
   hosts: localhost
   connection: local
-  become: yes
+  become: true
 
   tasks:
     - name: Deploy docker-compose
@@ -17,5 +17,5 @@
       register: response
 
     - name: Show response
-      debug:
+      ansible.builtin.debug:
         msg: "{{ response.content }}"
