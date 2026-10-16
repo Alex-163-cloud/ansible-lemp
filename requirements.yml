@@ -1,11 +1,10 @@
 ---
 roles:
-  - src: geerlingguy.postgresql
   - src: geerlingguy.nginx
-  - name: green.mongodb
-    src: https://github.com/UnderGreen/ansible-role-mongodb
+  - src: geerlingguy.postgresql
 
 collections:
-  - name: community.postgresql
   - name: community.mysql
+  - name: community.postgresql
   - name: community.docker
+  - name: community.mongodb
