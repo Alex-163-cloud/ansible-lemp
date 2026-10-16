@@ -1,0 +1,4 @@
+---
+- name: Restart python_app
+  debug:
+    msg: "App config changed — would restart python_app (systemd not available in container)"

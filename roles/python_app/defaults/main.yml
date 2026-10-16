@@ -1,0 +1,10 @@
+---
+app_name: python_app
+app_user: www-data
+app_group: www-data
+app_dir: /opt/{{ app_name }}
+app_env: production
+app_host: 0.0.0.0
+app_port: 5000
+app_venv: "{{ app_dir }}/venv"
+python_version: "3"

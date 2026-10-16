@@ -1,0 +1,34 @@
+---
+- name: Build custom Docker image
+  hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Build custom nginx image
+      community.docker.docker_image:
+        name: my-nginx
+        tag: v1.0
+        source: build
+        build:
+          path: /home/user/ansible-lemp/docker-custom
+        state: present
+
+    - name: Start custom nginx container
+      community.docker.docker_container:
+        name: my-nginx-container
+        image: my-nginx:v1.0
+        state: started
+        ports:
+          - "8091:80"
+        restart_policy: unless-stopped
+
+    - name: Test custom image
+      uri:
+        url: http://localhost:8091
+        return_content: yes
+      register: response
+
+    - name: Show response
+      debug:
+        msg: "{{ response.content }}"

@@ -1,0 +1,20 @@
+---
+- name: Test diff mode
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Create test file
+      copy:
+        content: |
+          line 1: original
+          line 2: original
+          line 3: original
+        dest: /tmp/diff-test.txt
+        mode: '0644'
+
+    - name: Modify test file
+      lineinfile:
+        path: /tmp/diff-test.txt
+        regexp: '^line 2:'
+        line: 'line 2: MODIFIED'

@@ -1,34 +1,30 @@
 ---
-- name: Update apt cache
+# ============ Debian/Ubuntu ============
+- name: Update apt cache (Debian)
   apt:
     update_cache: yes
     cache_valid_time: 3600
+  when: ansible_facts['os_family'] == 'Debian'
 
-- name: Install nginx
+- name: Install nginx (Debian)
   apt:
     name: nginx
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
 
-- name: Deploy nginx config from template
-  template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/sites-available/default
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Reload nginx
-
-- name: Deploy index.html from template
-  template:
-    src: index.html.j2
-    dest: /var/www/html/index.html
-    owner: www-data
-    group: www-data
-    mode: '0644'
-  notify: Reload nginx
-
-- name: Ensure nginx is running and enabled
-  service:
+# ============ RedHat/CentOS ============
+- name: Install nginx (RedHat)
+  dnf:
     name: nginx
-    state: started
-    enabled: yes
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+
+# ============ Общее ============
+- name: Verify nginx binary exists
+  command: nginx -v
+  register: nginx_version
+  changed_when: false
+
+- name: Show nginx version
+  debug:
+    msg: "{{ nginx_version.stderr }}"

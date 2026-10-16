@@ -1,0 +1,17 @@
+---
+- name: Simple test
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: First
+      debug:
+        msg: "First"
+
+    - name: Second
+      debug:
+        msg: "Second"
+
+    - name: Third
+      debug:
+        msg: "Third"

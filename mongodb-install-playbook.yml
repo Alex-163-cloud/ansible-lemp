@@ -1,0 +1,54 @@
+---
+- name: Install MongoDB 7.0
+  hosts: localhost
+  connection: local
+  become: yes
+
+  vars:
+    mongodb_version: "7.0"
+    mongodb_port: 27017
+    mongodb_bind_ip: 127.0.0.1
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - gnupg
+          - curl
+          - apt-transport-https
+        state: present
+        update_cache: yes
+
+    - name: Add MongoDB GPG key
+      shell: |
+        curl -fsSL https://www.mongodb.org/static/pgp/server-{{ mongodb_version }}.asc | \
+          gpg -o /usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg --dearmor
+      args:
+        creates: /usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg
+
+    - name: Add MongoDB repository
+      apt_repository:
+        repo: "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-{{ mongodb_version }}.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/{{ mongodb_version }} multiverse"
+        state: present
+        filename: "mongodb-org-{{ mongodb_version }}"
+
+    - name: Install MongoDB
+      apt:
+        name: mongodb-org
+        state: present
+        update_cache: yes
+
+    - name: Start MongoDB
+      service:
+        name: mongod
+        state: started
+        enabled: yes
+
+    - name: Check MongoDB version
+      command: mongod --version
+      register: mongod_version
+      changed_when: false
+
+    - name: Show MongoDB version
+      debug:
+        var: mongod_version.stdout_lines

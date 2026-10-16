@@ -1,0 +1,58 @@
+---
+- name: Test debug modules
+  hosts: localhost
+  connection: local
+  gather_facts: yes
+
+  vars:
+    app_name: "myapp"
+    app_port: 8080
+    debug_mode: true
+
+  tasks:
+    # 1. debug: msg — вывод сообщения
+    - name: Show simple message
+      debug:
+        msg: "Application {{ app_name }} running on port {{ app_port }}"
+
+    # 2. debug: var — вывод переменной
+    - name: Show variable
+      debug:
+        var: app_name
+
+    # 3. register + debug — сохранить результат задачи
+    - name: Get hostname
+      command: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Show hostname from register
+      debug:
+        var: hostname_result.stdout
+
+    # 4. assert — проверка условия
+    - name: Assert app_port is valid
+      assert:
+        that:
+          - app_port > 1024
+          - app_port < 65535
+        fail_msg: "Port {{ app_port }} is invalid!"
+        success_msg: "Port {{ app_port }} is valid"
+
+    # 5. fail — явная ошибка (только если условие)
+    - name: Fail if debug_mode is disabled
+      fail:
+        msg: "debug_mode is disabled — exiting"
+      when: not debug_mode
+
+    # 6. ignore_errors — продолжить после ошибки
+    - name: Try to read nonexistent file
+      command: cat /nonexistent/file.txt
+      register: cat_result
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Show error message
+      debug:
+        msg: "Error was: {{ cat_result.msg | default('no error') }}"
+      when: cat_result.failed | default(false)

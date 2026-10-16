@@ -1,0 +1,25 @@
+---
+- name: Test tags
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Task 1
+      debug:
+        msg: "Task 1"
+      tags: [t1]
+
+    - name: Task 2
+      debug:
+        msg: "Task 2"
+      tags: [t2]
+
+    - name: Task 3
+      debug:
+        msg: "Task 3"
+      tags: [t3]
+
+    - name: Task 4
+      debug:
+        msg: "Task 4"
+      tags: [t4]

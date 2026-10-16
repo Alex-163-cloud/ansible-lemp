@@ -1,0 +1,139 @@
+---
+- name: Deploy MongoDB replica set (3 nodes on one host)
+  hosts: localhost
+  connection: local
+  become: yes
+
+  vars:
+    mongodb_replset_name: rs0
+    mongodb_nodes:
+      - { name: mongo1, port: 27017 }
+      - { name: mongo2, port: 27018 }
+      - { name: mongo3, port: 27019 }
+
+  tasks:
+    # ============ Шаг 1: Остановить systemd-версию ============
+    - name: Stop systemd MongoDB (port 27017)
+      service:
+        name: mongod
+        state: stopped
+      ignore_errors: yes
+
+    # ============ Шаг 2: Убить все ручные mongod (безопасно) ============
+    - name: Kill any running mongod processes
+      shell: |
+        for pid in $(pgrep -f "mongod --replSet" || true); do
+          if ! ps -p $pid -o cmd= | grep -qE "ansible|pgrep|grep"; then
+            kill $pid 2>/dev/null || true
+          fi
+        done
+      changed_when: false
+      failed_when: false
+
+    - name: Wait for mongod to stop
+      pause:
+        seconds: 3
+
+    # ============ Шаг 3: Удалить старые данные и логи ============
+    - name: Remove old MongoDB data
+      file:
+        path: "/var/lib/mongodb-{{ item.name }}"
+        state: absent
+      loop: "{{ mongodb_nodes }}"
+
+    - name: Remove old MongoDB logs
+      file:
+        path: "/var/log/mongodb-{{ item.name }}.log"
+        state: absent
+      loop: "{{ mongodb_nodes }}"
+
+    # ============ Шаг 4: Создать директории и логи ============
+    - name: Create data directories
+      file:
+        path: "/var/lib/mongodb-{{ item.name }}"
+        state: directory
+        owner: mongodb
+        group: mongodb
+        mode: '0755'
+      loop: "{{ mongodb_nodes }}"
+
+    - name: Create log files
+      file:
+        path: "/var/log/mongodb-{{ item.name }}.log"
+        state: touch
+        owner: mongodb
+        group: mongodb
+        mode: '0644'
+      loop: "{{ mongodb_nodes }}"
+
+    # ============ Шаг 5: /var/run/mongodb ============
+    - name: Ensure /var/run/mongodb exists
+      file:
+        path: /var/run/mongodb
+        state: directory
+        owner: mongodb
+        group: mongodb
+        mode: '0755'
+
+    # ============ Шаг 6: Запустить 3 mongod через nohup ============
+    - name: Start MongoDB nodes via nohup
+      shell: |
+        nohup mongod --replSet {{ mongodb_replset_name }} \
+                     --port {{ item.port }} \
+                     --dbpath /var/lib/mongodb-{{ item.name }} \
+                     --bind_ip 127.0.0.1 \
+                     > /var/log/mongodb-{{ item.name }}.log 2>&1 &
+      loop: "{{ mongodb_nodes }}"
+      become_user: mongodb
+      changed_when: true
+
+    # ============ Шаг 7: Подождать открытия портов ============
+    - name: Wait for MongoDB nodes to be ready
+      wait_for:
+        port: "{{ item.port }}"
+        host: 127.0.0.1
+        delay: 2
+        timeout: 30
+      loop: "{{ mongodb_nodes }}"
+
+    # ============ Шаг 8: Инициализировать replica set ============
+    - name: Initiate replica set
+      shell: |
+        mongosh --port 27017 --quiet --eval '
+          try {
+            rs.status();
+            print("already-initiated");
+          } catch(e) {
+            rs.initiate({
+              _id: "{{ mongodb_replset_name }}",
+              members: [
+                { _id: 0, host: "127.0.0.1:27017" },
+                { _id: 1, host: "127.0.0.1:27018" },
+                { _id: 2, host: "127.0.0.1:27019" }
+              ]
+            });
+            print("initiated");
+          }
+        '
+      register: rs_init
+      changed_when: "'initiated' in rs_init.stdout and 'already-initiated' not in rs_init.stdout"
+      run_once: yes
+
+    # ============ Шаг 9: Подождать стабилизации ============
+    - name: Wait for replica set to stabilize
+      pause:
+        seconds: 15
+      run_once: yes
+
+    # ============ Шаг 10: Проверить статус ============
+    - name: Check replica set status
+      shell: |
+        mongosh --port 27017 --quiet --eval 'rs.status().members.map(m => m.name + " => " + m.stateStr).join("\n")'
+      register: rs_status
+      changed_when: false
+      run_once: yes
+
+    - name: Show replica set status
+      debug:
+        var: rs_status.stdout_lines
+      run_once: yes

@@ -1,0 +1,36 @@
+---
+- name: Test SSH connection
+  hosts: remote
+  gather_facts: yes
+
+  tasks:
+    - name: Show remote hostname
+      debug:
+        msg: "Connected to {{ ansible_facts['hostname'] }}"
+
+    - name: Show remote OS
+      debug:
+        msg: "OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+
+    - name: Show remote Python
+      debug:
+        msg: "Python: {{ ansible_facts['python']['version']['major'] }}.{{ ansible_facts['python']['version']['minor'] }}.{{ ansible_facts['python']['version']['micro'] }}"
+
+    - name: Show remote CPU
+      debug:
+        msg: "CPU: {{ ansible_facts['processor_vcpus'] }} cores"
+
+    - name: Create test file
+      copy:
+        content: "Hello from Ansible via SSH!\n"
+        dest: /root/ansible-test.txt
+        mode: '0644'
+
+    - name: Read test file
+      command: cat /root/ansible-test.txt
+      register: file_content
+      changed_when: false
+
+    - name: Show file content
+      debug:
+        msg: "{{ file_content.stdout }}"

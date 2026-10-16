@@ -1,0 +1,17 @@
+---
+- name: Deploy PostgreSQL
+  hosts: localhost
+  connection: local
+  become: yes
+
+  vars:
+    postgresql_databases:
+      - name: lemp_db_pg
+        owner: lemp_user_pg
+    postgresql_users:
+      - name: lemp_user_pg
+        password: "Ubuntu163"
+        role_attr_flags: CREATEDB,LOGIN
+
+  roles:
+    - role: geerlingguy.postgresql

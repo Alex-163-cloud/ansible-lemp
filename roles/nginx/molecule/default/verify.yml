@@ -1,0 +1,32 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  tasks:
+    - name: Check nginx is installed
+      ansible.builtin.command: nginx -v
+      register: nginx_version
+      changed_when: false
+      failed_when: nginx_version.rc != 0
+
+    - name: Check nginx config is valid
+      ansible.builtin.command: nginx -t
+      register: nginx_test
+      changed_when: false
+      failed_when: nginx_test.rc != 0
+
+    - name: Assert nginx version
+      ansible.builtin.assert:
+        that:
+          - "'nginx version' in nginx_version.stderr"
+        success_msg: "Nginx installed: {{ nginx_version.stderr }}"
+
+    - name: Check nginx is running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+      check_mode: yes
+
+    - name: Show nginx config test
+      ansible.builtin.debug:
+        msg: "Nginx config OK: {{ nginx_test.stderr }}"

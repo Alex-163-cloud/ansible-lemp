@@ -1,0 +1,21 @@
+---
+- name: Deploy via docker_compose_v2
+  hosts: localhost
+  connection: local
+  become: yes
+
+  tasks:
+    - name: Deploy docker-compose
+      community.docker.docker_compose_v2:
+        project_src: /home/user/ansible-lemp/docker-compose
+        state: present
+
+    - name: Test compose service
+      uri:
+        url: http://localhost:8092
+        return_content: yes
+      register: response
+
+    - name: Show response
+      debug:
+        msg: "{{ response.content }}"

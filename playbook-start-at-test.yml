@@ -1,0 +1,21 @@
+---
+- name: Test start-at-task
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Task 1 - Always runs
+      debug:
+        msg: "Task 1"
+
+    - name: Task 2 - Should be skipped
+      debug:
+        msg: "Task 2"
+
+    - name: Task 3 - Start here
+      debug:
+        msg: "Task 3"
+
+    - name: Task 4 - After start
+      debug:
+        msg: "Task 4"

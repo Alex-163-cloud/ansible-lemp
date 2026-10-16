@@ -1,0 +1,8 @@
+---
+- name: Deploy Python app
+  hosts: localhost
+  connection: local
+  become: yes
+
+  roles:
+    - python_app
