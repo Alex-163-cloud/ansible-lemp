@@ -14,7 +14,7 @@ cache:
     - .ansible/galaxy_cache/
 
 .ansible_base:
-  image: python:3.12-slim
+  image: python:3.12-slim-bookworm
   before_script:
     - apt-get update && apt-get install -y git
     - python3 -m pip install --upgrade pip
@@ -30,16 +30,18 @@ syntax-check:
 
 molecule-test:
   stage: test
-  image: docker:26
+  image: python:3.12-slim-bookworm
   services:
-    - docker:26-dind
+    - name: docker:26-dind
+      alias: docker
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
   before_script:
-    - apk add --no-cache python3 py3-pip git
-    - pip install --break-system-packages --no-cache-dir ansible-core molecule "molecule-plugins[docker]"
-    - ansible-galaxy collection install -r requirements.yml
+    - apt-get update && apt-get install -y git docker.io
+    - python3 -m pip install --upgrade pip
+    - python3 -m pip install ansible-core molecule "molecule-plugins[docker]"
+    - ansible-galaxy install -r requirements.yml
     - printf '%s\n' "$ANSIBLE_VAULT_PASSWORD" > /tmp/vault_pass.txt
   script:
     - cd roles/nginx
