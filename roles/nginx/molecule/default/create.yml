@@ -8,7 +8,7 @@
       community.docker.docker_container:
         name: "{{ item.name }}"
         image: "{{ item.image }}"
-        ansible.builtin.command: "{{ item.command | default(omit) }}"
+        command: "{{ item.command | default(omit) }}"
         privileged: "{{ item.privileged | default(false) }}"
         volumes: "{{ item.volumes | default(omit) }}"
         tmpfs: "{{ item.tmpfs | default(omit) }}"
