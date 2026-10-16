@@ -1,0 +1,57 @@
+# .gitlab-ci.yml
+---
+stages:
+  - lint
+  - syntax
+  - test
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  ANSIBLE_FORCE_COLOR: "true"
+
+cache:
+  paths:
+    - .cache/pip
+    - .ansible/galaxy_cache/
+
+.ansible_base:
+  image: python:3.12-slim
+  before_script:
+    - python3 -m pip install --upgrade pip
+    - python3 -m pip install ansible-core
+    - ansible-galaxy collection install -r requirements.yml
+
+ansible-lint:
+  stage: lint
+  extends: .ansible_base
+  script:
+    - python3 -m pip install ansible-lint
+    - ansible-lint playbook-lemp.yml playbook-multi-os.yml docker-playbook.yml
+
+syntax-check:
+  stage: syntax
+  extends: .ansible_base
+  script:
+    - ansible-playbook -i inventory.ini playbook-lemp.yml --syntax-check
+    - ansible-playbook -i inventory-ssh.ini playbook-multi-os.yml --syntax-check
+
+molecule-test:
+  stage: test
+  image: docker:26
+  services:
+    - docker:26-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - apk add --no-cache python3 py3-pip
+    - pip install --break-system-packages --no-cache-dir ansible-core molecule "molecule-plugins[docker]"
+    - ansible-galaxy collection install -r requirements.yml
+    - printf '%s\n' "$ANSIBLE_VAULT_PASSWORD" > /tmp/vault_pass.txt
+  script:
+    - cd roles/nginx
+    - molecule test
+  after_script:
+    - rm -f /tmp/vault_pass.txt
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
