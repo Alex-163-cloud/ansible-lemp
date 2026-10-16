@@ -22,7 +22,6 @@ provisioner:
   inventory:
     group_vars:
       all:
-        ansible_connection: docker
         ansible_python_interpreter: /usr/bin/python3
 verifier:
   name: ansible
