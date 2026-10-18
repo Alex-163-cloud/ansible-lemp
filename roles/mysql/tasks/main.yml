@@ -28,3 +28,4 @@
       - "CREATE USER IF NOT EXISTS '{{ mysql_db_user }}'@'{{ mysql_db_host }}' IDENTIFIED WITH caching_sha2_password BY '{{ mysql_db_password }}';"
       - "GRANT ALL PRIVILEGES ON {{ mysql_db_name }}.* TO '{{ mysql_db_user }}'@'{{ mysql_db_host }}';"
       - "FLUSH PRIVILEGES;"
+  changed_when: false

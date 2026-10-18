@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  gather_facts: true
+  become: true
+  vars:
+    mysql_db_name: lemp_db
+    mysql_db_user: lemp_user
+    mysql_db_host: localhost
+    mysql_db_password: "TestPassword123!"
+  tasks:
+    - name: Apply role under test
+      ansible.builtin.include_role:
+        name: mysql

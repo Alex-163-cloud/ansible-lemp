@@ -1,0 +1,28 @@
+---
+- name: Verify Python App
+  hosts: all
+  become: true
+  tasks:
+    - name: Check app directory exists
+      ansible.builtin.stat:
+        path: /opt/python_app
+      register: app_dir
+      failed_when: not app_dir.stat.exists
+
+    - name: Check venv exists
+      ansible.builtin.stat:
+        path: /opt/python_app/venv
+      register: venv_dir
+      failed_when: not venv_dir.stat.exists
+
+    - name: Check app.py exists
+      ansible.builtin.stat:
+        path: /opt/python_app/app.py
+      register: app_file
+      failed_when: not app_file.stat.exists
+
+#    - name: Check systemd service exists
+#      ansible.builtin.stat:
+#        path: /etc/systemd/system/python_app.service
+#      register: service_file
+#      failed_when: not service_file.stat.exists

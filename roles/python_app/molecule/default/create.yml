@@ -1,0 +1,24 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Create molecule instance
+      community.docker.docker_container:
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
+        command: "{{ item.command | default(omit) }}"
+        privileged: "{{ item.privileged | default(false) }}"
+        volumes: "{{ item.volumes | default(omit) }}"
+        tmpfs: "{{ item.tmpfs | default(omit) }}"
+        capabilities: "{{ item.capabilities | default(omit) }}"
+        cgroupns_mode: "{{ item.cgroupns_mode | default(omit) }}"
+        state: started
+        recreate: false
+      loop: "{{ molecule_yml.platforms }}"
+    - name: Add instance to molecule inventory
+      ansible.builtin.add_host:
+        name: "{{ item.name }}"
+        groups: molecule
+      loop: "{{ molecule_yml.platforms }}"

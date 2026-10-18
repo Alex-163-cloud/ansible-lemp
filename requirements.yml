@@ -4,6 +4,7 @@ roles:
   - src: geerlingguy.postgresql
 
 collections:
+  - name: ansible.mysql
   - name: community.mysql
   - name: community.postgresql
   - name: community.docker

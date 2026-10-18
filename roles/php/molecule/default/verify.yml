@@ -1,0 +1,27 @@
+---
+- name: Verify PHP
+  hosts: all
+  become: true
+  tasks:
+    - name: Check php is installed
+      ansible.builtin.command: php -v
+      register: php_version
+      changed_when: false
+      failed_when: php_version.rc != 0
+
+    - name: Check php-fpm service is running
+      ansible.builtin.service:
+        name: php8.1-fpm
+        state: started
+      check_mode: yes
+      
+    - name: Check php-mysql extension is loaded
+      ansible.builtin.command: php -m
+      register: php_modules
+      changed_when: false
+      
+    - name: Assert pdo_mysql or mysqli is loaded
+      ansible.builtin.assert:
+        that:
+          - "'mysqli' in php_modules.stdout or 'pdo_mysql' in php_modules.stdout"
+        success_msg: "PHP MySQL extensions are loaded."

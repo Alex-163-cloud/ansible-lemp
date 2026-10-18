@@ -1,0 +1,16 @@
+---
+- name: Verify MySQL
+  hosts: all
+  become: true
+  tasks:
+    - name: Check mysql is installed
+      ansible.builtin.command: mysql --version
+      register: mysql_version
+      changed_when: false
+      failed_when: mysql_version.rc != 0
+
+    - name: Check mysql service is running
+      ansible.builtin.service:
+        name: mysql
+        state: started
+      check_mode: yes
