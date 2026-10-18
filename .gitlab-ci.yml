@@ -8,6 +8,7 @@ variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   ANSIBLE_FORCE_COLOR: "true"
   ANSIBLE_LOCAL_TEMP: /tmp/.ansible-local
+  ANSIBLE_REMOTE_TMP: /tmp/.ansible-remote
 
 cache:
   paths:
@@ -44,6 +45,7 @@ molecule-test:
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
+    ANSIBLE_REMOTE_TMP: /tmp/.ansible-remote
   before_script:
     - apt-get update && apt-get install -y git docker.io
     - python3 -m pip install --upgrade pip
@@ -51,9 +53,12 @@ molecule-test:
     - ansible-galaxy install -r requirements.yml
     - printf '%s\n' "$ANSIBLE_VAULT_PASSWORD" > /tmp/vault_pass.txt
   script:
-    - cd roles/nginx
+    - cd roles/$ROLE
     - molecule test
   after_script:
     - rm -f /tmp/vault_pass.txt
+  parallel:
+    matrix:
+      - ROLE: [nginx, mysql, php, python_app]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
