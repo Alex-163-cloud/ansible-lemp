@@ -19,6 +19,9 @@ platforms:
       - molecule
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_CALLBACKS_ENABLED: ansible.builtin.junit
+    JUNIT_OUTPUT_DIR: "${MOLECULE_SCENARIO_DIRECTORY}/../../../../reports/php"
   inventory:
     group_vars:
       all:

@@ -35,6 +35,11 @@ syntax-check:
   script:
     - ansible-playbook -i inventory.ini playbook-lemp.yml --syntax-check
     - ansible-playbook -i inventory-ssh.ini playbook-multi-os.yml --syntax-check
+  artifacts:
+    when: always
+    paths:
+      - reports/
+    expire_in: 1 week
 
 molecule-test:
   stage: test
@@ -52,6 +57,7 @@ molecule-test:
     - python3 -m pip install ansible-core molecule "molecule-plugins[docker]"
     - ansible-galaxy install -r requirements.yml
     - printf '%s\n' "$ANSIBLE_VAULT_PASSWORD" > /tmp/vault_pass.txt
+    - mkdir -p reports/$ROLE
   script:
     - cd roles/$ROLE
     - molecule test
@@ -60,5 +66,12 @@ molecule-test:
   parallel:
     matrix:
       - ROLE: [nginx, mysql, php, python_app]
+  artifacts:
+    when: always
+    reports:
+      junit: reports/$ROLE/*.xml
+    paths:
+      - reports/
+    expire_in: 1 week
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
