@@ -1,0 +1,12 @@
+plugin: community.docker.docker_containers
+docker_host: unix:///var/run/docker.sock
+connection_type: docker-cli
+verbose_output: false
+strict: false
+
+keyed_groups:
+  - prefix: image
+    key: docker_image.Split(':')[0]
+    separator: "_"
+  - prefix: state
+    key: docker_state.Running | string
